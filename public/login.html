@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sign in</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0a0a0b;
+      --surface: #111113;
+      --border: #222226;
+      --border-focus: #3a3a42;
+      --text: #e8e8ea;
+      --muted: #6b6b72;
+      --accent: #7c6aff;
+      --accent-dim: rgba(124, 106, 255, 0.12);
+      --error: #ff6b6b;
+      --radius: 10px;
+    }
+
+    body {
+      min-height: 100dvh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg);
+      font-family: 'DM Sans', sans-serif;
+      color: var(--text);
+      padding: 24px;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(var(--border) 1px, transparent 1px),
+        linear-gradient(90deg, var(--border) 1px, transparent 1px);
+      background-size: 48px 48px;
+      opacity: 0.35;
+      pointer-events: none;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      top: -20%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(124,106,255,0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .card {
+      position: relative;
+      width: 100%;
+      max-width: 400px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 40px;
+      animation: rise 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 32px;
+    }
+
+    .brand-icon {
+      width: 32px;
+      height: 32px;
+      background: var(--accent-dim);
+      border: 1px solid rgba(124,106,255,0.3);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .brand-icon svg { width: 16px; height: 16px; stroke: var(--accent); }
+
+    .brand-name {
+      font-family: 'DM Mono', monospace;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--muted);
+      letter-spacing: 0.04em;
+    }
+
+    h1 {
+      font-size: 22px;
+      font-weight: 500;
+      letter-spacing: -0.02em;
+      margin-bottom: 6px;
+    }
+
+    .subtitle {
+      font-size: 13.5px;
+      color: var(--muted);
+      margin-bottom: 32px;
+    }
+
+    .scope-notice {
+      display: none;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 12px 14px;
+      background: var(--accent-dim);
+      border: 1px solid rgba(124,106,255,0.2);
+      border-radius: var(--radius);
+      margin-bottom: 24px;
+      font-size: 12.5px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .scope-notice svg { width: 14px; height: 14px; stroke: var(--accent); flex-shrink: 0; margin-top: 1px; }
+    #app-name { color: var(--text); font-weight: 500; }
+
+    .field { margin-bottom: 16px; }
+
+    label {
+      display: block;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--muted);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-bottom: 7px;
+    }
+
+    input {
+      width: 100%;
+      padding: 11px 14px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14.5px;
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+
+    input::placeholder { color: var(--muted); opacity: 0.5; }
+    input:focus {
+      border-color: var(--border-focus);
+      box-shadow: 0 0 0 3px rgba(124,106,255,0.1);
+    }
+
+    .btn {
+      width: 100%;
+      padding: 12px;
+      margin-top: 8px;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14.5px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: opacity 0.15s, transform 0.1s;
+    }
+
+    .btn:hover { opacity: 0.88; }
+    .btn:active { transform: scale(0.99); }
+    .btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
+
+    .btn .spinner {
+      display: none;
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+      margin: 0 auto;
+    }
+
+    .btn.loading .btn-text { display: none; }
+    .btn.loading .spinner { display: block; }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .alert {
+      display: none;
+      padding: 11px 14px;
+      border-radius: var(--radius);
+      font-size: 13px;
+      margin-top: 14px;
+      line-height: 1.4;
+    }
+
+    .alert.error {
+      background: rgba(255,107,107,0.08);
+      border: 1px solid rgba(255,107,107,0.2);
+      color: var(--error);
+    }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 24px 0;
+    }
+
+    .divider::before, .divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .divider span { font-size: 12px; color: var(--muted); }
+
+    .bottom-link {
+      text-align: center;
+      font-size: 13.5px;
+      color: var(--muted);
+    }
+
+    .bottom-link a {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .bottom-link a:hover { opacity: 0.8; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="brand">
+      <div class="brand-icon">
+        <svg fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 5.25a3 3 0 013 3m3 0a6 6 0 01-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1121.75 8.25z" />
+        </svg>
+      </div>
+      <span class="brand-name">auth.yourapp.dev</span>
+    </div>
+
+    <h1>Welcome back</h1>
+    <p class="subtitle">Sign in to continue</p>
+
+    <div class="scope-notice" id="scope-notice">
+      <svg fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
+      </svg>
+      <span><span id="app-name">An app</span> is requesting access to your profile and email.</span>
+    </div>
+
+    <form id="login-form">
+      <div class="field">
+        <label for="email">Email</label>
+        <input type="email" id="email" placeholder="you@example.com" required autocomplete="email" />
+      </div>
+
+      <div class="field">
+        <label for="password">Password</label>
+        <input type="password" id="password" placeholder="••••••••" required autocomplete="current-password" />
+      </div>
+
+      <button type="submit" class="btn" id="submit-btn">
+        <span class="btn-text">Sign in</span>
+        <span class="spinner"></span>
+      </button>
+
+      <div class="alert error" id="error-msg"></div>
+    </form>
+
+    <div class="divider"><span>new here?</span></div>
+
+    <p class="bottom-link">
+      <a href="/signup.html">Create an account</a>
+    </p>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const clientId = params.get("client_id");
+
+    if (clientId) {
+      const notice = document.getElementById("scope-notice");
+      notice.style.display = "flex";
+
+      // Fetch the actual app name instead of showing the raw UUID
+      fetch(`/api/clients/${encodeURIComponent(clientId)}/name`)
+        .then(r => r.ok ? r.json() : null)
+        .then(data => {
+          if (data?.name) {
+            document.getElementById("app-name").textContent = data.name;
+          }
+        })
+        .catch(() => {}); // silently fall back to "An app" if it fails
+    }
+
+    document.getElementById("login-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById("submit-btn");
+      const errorEl = document.getElementById("error-msg");
+
+      btn.classList.add("loading");
+      btn.disabled = true;
+      errorEl.style.display = "none";
+
+      try {
+        const res = await fetch("/authorize/callback", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email: document.getElementById("email").value,
+            password: document.getElementById("password").value,
+          }),
+          // No redirect: "follow" — server returns JSON { redirectUrl }
+          // and we navigate with window.location.href to avoid CSP connect-src blocking
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          errorEl.textContent = data.error_description ?? data.error ?? "Invalid credentials.";
+          errorEl.style.display = "block";
+          return;
+        }
+
+        // Navigate as a browser navigation — not a fetch — so CSP doesn't block it
+        window.location.href = data.redirectUrl;
+      } catch {
+        errorEl.textContent = "Something went wrong. Please try again.";
+        errorEl.style.display = "block";
+      } finally {
+        btn.classList.remove("loading");
+        btn.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>

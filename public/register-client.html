@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Register Application</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0a0a0b;
+      --surface: #111113;
+      --border: #222226;
+      --border-focus: #3a3a42;
+      --text: #e8e8ea;
+      --muted: #6b6b72;
+      --accent: #7c6aff;
+      --accent-dim: rgba(124, 106, 255, 0.12);
+      --error: #ff6b6b;
+      --success: #4ade80;
+      --warning: #fbbf24;
+      --radius: 10px;
+    }
+
+    body {
+      min-height: 100dvh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg);
+      font-family: 'DM Sans', sans-serif;
+      color: var(--text);
+      padding: 24px;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(var(--border) 1px, transparent 1px),
+        linear-gradient(90deg, var(--border) 1px, transparent 1px);
+      background-size: 48px 48px;
+      opacity: 0.35;
+      pointer-events: none;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      top: -20%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 700px;
+      height: 700px;
+      background: radial-gradient(circle, rgba(124,106,255,0.07) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .card {
+      position: relative;
+      width: 100%;
+      max-width: 480px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 40px;
+      animation: rise 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 32px;
+    }
+
+    .brand-icon {
+      width: 32px;
+      height: 32px;
+      background: var(--accent-dim);
+      border: 1px solid rgba(124,106,255,0.3);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .brand-icon svg { width: 16px; height: 16px; stroke: var(--accent); }
+
+    .brand-name {
+      font-family: 'DM Mono', monospace;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--muted);
+      letter-spacing: 0.04em;
+    }
+
+    h1 {
+      font-size: 22px;
+      font-weight: 500;
+      letter-spacing: -0.02em;
+      margin-bottom: 6px;
+    }
+
+    .subtitle {
+      font-size: 13.5px;
+      color: var(--muted);
+      margin-bottom: 32px;
+      line-height: 1.5;
+    }
+
+    #auth-gate { display: block; }
+    #reg-form-section { display: none; }
+    #success-section { display: none; }
+
+    .field { margin-bottom: 18px; }
+
+    label {
+      display: block;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--muted);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-bottom: 7px;
+    }
+
+    .label-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 7px;
+    }
+
+    .label-row label { margin-bottom: 0; }
+    .label-hint { font-size: 11px; color: var(--muted); opacity: 0.7; }
+
+    input {
+      width: 100%;
+      padding: 11px 14px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14.5px;
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+
+    input::placeholder { color: var(--muted); opacity: 0.5; }
+    input:focus {
+      border-color: var(--border-focus);
+      box-shadow: 0 0 0 3px rgba(124,106,255,0.1);
+    }
+
+    .redirect-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 8px; }
+    .redirect-item { display: flex; gap: 8px; }
+    .redirect-item input { flex: 1; }
+
+    .icon-btn {
+      width: 40px;
+      height: 40px;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: border-color 0.15s, color 0.15s;
+    }
+
+    .icon-btn:hover { border-color: var(--border-focus); color: var(--text); }
+    .icon-btn svg { width: 15px; height: 15px; stroke: currentColor; }
+
+    .add-redirect {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      color: var(--accent);
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 0;
+      font-family: 'DM Sans', sans-serif;
+      transition: opacity 0.15s;
+    }
+
+    .add-redirect:hover { opacity: 0.75; }
+    .add-redirect svg { width: 14px; height: 14px; stroke: currentColor; }
+
+    .btn {
+      width: 100%;
+      padding: 12px;
+      margin-top: 8px;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14.5px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: opacity 0.15s, transform 0.1s;
+    }
+
+    .btn:hover { opacity: 0.88; }
+    .btn:active { transform: scale(0.99); }
+    .btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
+
+    .btn .spinner {
+      display: none;
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+      margin: 0 auto;
+    }
+
+    .btn.loading .btn-text { display: none; }
+    .btn.loading .spinner { display: block; }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .alert {
+      display: none;
+      padding: 11px 14px;
+      border-radius: var(--radius);
+      font-size: 13px;
+      margin-top: 14px;
+      line-height: 1.4;
+    }
+
+    .alert.error {
+      background: rgba(255,107,107,0.08);
+      border: 1px solid rgba(255,107,107,0.2);
+      color: var(--error);
+    }
+
+    .credentials { display: flex; flex-direction: column; gap: 16px; }
+
+    .cred-item label {
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-size: 11px;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .cred-value {
+      display: flex;
+      align-items: flex-start; /* ← flex-start so copy icon stays top-right on long values */
+      gap: 8px;
+      padding: 11px 14px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      min-width: 0; /* ← allows flex children to shrink below content size */
+    }
+
+    .cred-value code {
+      flex: 1;
+      font-family: 'DM Mono', monospace;
+      font-size: 12.5px;
+      color: var(--text);
+      /* ← these two lines fix the overflow */
+      word-break: break-all;
+      overflow-wrap: anywhere;
+      min-width: 0;
+    }
+
+    .copy-btn {
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      color: var(--muted);
+      padding: 2px;
+      display: flex;
+      align-items: center;
+      transition: color 0.15s;
+      flex-shrink: 0;
+      margin-top: 1px; /* align with first line of text */
+    }
+
+    .copy-btn:hover { color: var(--text); }
+    .copy-btn svg { width: 14px; height: 14px; stroke: currentColor; }
+
+    /* Inline toast for copy feedback */
+    .copy-toast {
+      display: none;
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--success);
+      font-size: 13px;
+      padding: 10px 20px;
+      border-radius: 999px;
+      pointer-events: none;
+      animation: fadeUp 0.2s ease both;
+      z-index: 100;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateX(-50%) translateY(6px); }
+      to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+    }
+
+    .warning-box {
+      display: flex;
+      gap: 10px;
+      padding: 12px 14px;
+      background: rgba(251,191,36,0.06);
+      border: 1px solid rgba(251,191,36,0.2);
+      border-radius: var(--radius);
+      font-size: 12.5px;
+      color: var(--warning);
+      line-height: 1.5;
+      margin-bottom: 20px;
+    }
+
+    .warning-box svg { width: 14px; height: 14px; stroke: currentColor; flex-shrink: 0; margin-top: 1px; }
+
+    .divider { height: 1px; background: var(--border); margin: 24px 0; }
+
+    .section-label {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--muted);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Toast notification for copy feedback -->
+  <div class="copy-toast" id="copy-toast">Copied to clipboard</div>
+
+  <div class="card">
+    <div class="brand">
+      <div class="brand-icon">
+        <svg fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 5.25a3 3 0 013 3m3 0a6 6 0 01-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1121.75 8.25z" />
+        </svg>
+      </div>
+      <span class="brand-name">auth.yourapp.dev</span>
+    </div>
+
+    <!-- Step 1: Admin gate -->
+    <div id="auth-gate">
+      <h1>Register application</h1>
+      <p class="subtitle">Enter your admin password to continue.</p>
+
+      <form id="gate-form">
+        <div class="field">
+          <label for="admin-password">Admin password</label>
+          <input type="password" id="admin-password" placeholder="••••••••" required />
+        </div>
+        <button type="submit" class="btn" id="gate-btn">
+          <span class="btn-text">Continue</span>
+          <span class="spinner"></span>
+        </button>
+        <div class="alert error" id="gate-error"></div>
+      </form>
+    </div>
+
+    <!-- Step 2: Registration form -->
+    <div id="reg-form-section">
+      <h1>Register application</h1>
+      <p class="subtitle">Fill in your app's details. You'll receive a client ID and secret to use in your project.</p>
+
+      <form id="reg-form">
+        <div class="field">
+          <label for="app-name">Application name</label>
+          <input type="text" id="app-name" placeholder="My Portfolio" required />
+        </div>
+
+        <div class="field">
+          <label for="contact-email">Contact email</label>
+          <input type="email" id="contact-email" placeholder="you@example.com" required />
+        </div>
+
+        <div class="field">
+          <label for="app-url">Application URL</label>
+          <input type="url" id="app-url" placeholder="https://myportfolio.com" />
+        </div>
+
+        <div class="field">
+          <div class="label-row">
+            <label>Redirect URIs</label>
+            <span class="label-hint">Where users land after login</span>
+          </div>
+          <div class="redirect-list" id="redirect-list">
+            <div class="redirect-item">
+              <input type="url" placeholder="https://myportfolio.com/callback" required />
+            </div>
+          </div>
+          <button type="button" class="add-redirect" id="add-redirect-btn">
+            <svg fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+            </svg>
+            Add another URI
+          </button>
+        </div>
+
+        <button type="submit" class="btn" id="reg-btn">
+          <span class="btn-text">Register application</span>
+          <span class="spinner"></span>
+        </button>
+        <div class="alert error" id="reg-error"></div>
+      </form>
+    </div>
+
+    <!-- Step 3: Credentials -->
+    <div id="success-section">
+      <h1>Application registered</h1>
+      <p class="subtitle" style="margin-bottom: 24px">
+        Copy these credentials into your project's
+        <code style="font-family: 'DM Mono', monospace; font-size: 12px; color: var(--accent)">.env</code> file.
+      </p>
+
+      <div class="warning-box">
+        <svg fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+        </svg>
+        <span>The client secret is shown only once. Store it securely — it cannot be recovered.</span>
+      </div>
+
+      <div class="credentials">
+        <div class="cred-item">
+          <label>Client ID</label>
+          <div class="cred-value">
+            <code id="result-client-id"></code>
+            <button class="copy-btn" onclick="copyText('result-client-id')" title="Copy">
+              <svg fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 01-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 011.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 00-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 01-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 00-3.375-3.375h-1.5a1.125 1.125 0 01-1.125-1.125v-1.5a3.375 3.375 0 00-3.375-3.375H9.75" />
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="cred-item">
+          <label>Client Secret</label>
+          <div class="cred-value">
+            <code id="result-client-secret"></code>
+            <button class="copy-btn" onclick="copyText('result-client-secret')" title="Copy">
+              <svg fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 01-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 011.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 00-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 01-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 00-3.375-3.375h-1.5a1.125 1.125 0 01-1.125-1.125v-1.5a3.375 3.375 0 00-3.375-3.375H9.75" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <p class="section-label">Add to your project's .env</p>
+      <div class="cred-value">
+        <code id="env-snippet" style="white-space: pre; line-height: 1.8; font-size: 12px; word-break: break-all;"></code>
+        <button class="copy-btn" onclick="copyText('env-snippet')" title="Copy" style="align-self: flex-start">
+          <svg fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 01-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 011.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 00-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 01-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 00-3.375-3.375h-1.5a1.125 1.125 0 01-1.125-1.125v-1.5a3.375 3.375 0 00-3.375-3.375H9.75" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ── Copy with toast feedback ──────────────────────────────────────────
+    let toastTimer = null;
+
+    function copyText(id) {
+      const text = document.getElementById(id).textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        const toast = document.getElementById("copy-toast");
+        toast.style.display = "block";
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => { toast.style.display = "none"; }, 2000);
+      }).catch(() => {
+        // Fallback for older browsers
+        const ta = document.createElement("textarea");
+        ta.value = text;
+        ta.style.position = "fixed";
+        ta.style.opacity = "0";
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand("copy");
+        document.body.removeChild(ta);
+
+        const toast = document.getElementById("copy-toast");
+        toast.style.display = "block";
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => { toast.style.display = "none"; }, 2000);
+      });
+    }
+
+    // ── Admin gate ───────────────────────────────────────────────────────
+    document.getElementById("gate-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById("gate-btn");
+      const errorEl = document.getElementById("gate-error");
+
+      btn.classList.add("loading"); btn.disabled = true;
+      errorEl.style.display = "none";
+
+      try {
+        const res = await fetch("/api/admin/verify", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ password: document.getElementById("admin-password").value }),
+        });
+
+        if (!res.ok) {
+          errorEl.textContent = "Incorrect password.";
+          errorEl.style.display = "block";
+          return;
+        }
+
+        const { token } = await res.json();
+        sessionStorage.setItem("admin_token", token);
+
+        document.getElementById("auth-gate").style.display = "none";
+        document.getElementById("reg-form-section").style.display = "block";
+      } catch {
+        errorEl.textContent = "Something went wrong.";
+        errorEl.style.display = "block";
+      } finally {
+        btn.classList.remove("loading"); btn.disabled = false;
+      }
+    });
+
+    // ── Add/remove redirect URIs ─────────────────────────────────────────
+    document.getElementById("add-redirect-btn").addEventListener("click", () => {
+      const list = document.getElementById("redirect-list");
+      const item = document.createElement("div");
+      item.className = "redirect-item";
+      item.innerHTML = `
+        <input type="url" placeholder="https://myapp.com/callback" />
+        <button type="button" class="icon-btn" onclick="this.parentElement.remove()">
+          <svg fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      `;
+      list.appendChild(item);
+      item.querySelector("input").focus();
+    });
+
+    // ── Registration form ────────────────────────────────────────────────
+    document.getElementById("reg-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById("reg-btn");
+      const errorEl = document.getElementById("reg-error");
+
+      const redirectUris = Array.from(
+        document.querySelectorAll("#redirect-list input")
+      ).map(i => i.value.trim()).filter(Boolean);
+
+      if (redirectUris.length === 0) {
+        errorEl.textContent = "At least one redirect URI is required.";
+        errorEl.style.display = "block";
+        return;
+      }
+
+      btn.classList.add("loading"); btn.disabled = true;
+      errorEl.style.display = "none";
+
+      try {
+        const res = await fetch("/api/admin/clients", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${sessionStorage.getItem("admin_token")}`,
+          },
+          body: JSON.stringify({
+            name: document.getElementById("app-name").value,
+            contactEmail: document.getElementById("contact-email").value,
+            appUrl: document.getElementById("app-url").value || undefined,
+            redirectUris,
+          }),
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          errorEl.textContent = data.message ?? "Registration failed.";
+          errorEl.style.display = "block";
+          return;
+        }
+
+        const { clientId, clientSecret } = data;
+        const issuer = window.location.origin;
+
+        document.getElementById("result-client-id").textContent = clientId;
+        document.getElementById("result-client-secret").textContent = clientSecret;
+        document.getElementById("env-snippet").textContent =
+          `AUTH_ISSUER=${issuer}\nCLIENT_ID=${clientId}\nCLIENT_SECRET=${clientSecret}`;
+
+        document.getElementById("reg-form-section").style.display = "none";
+        document.getElementById("success-section").style.display = "block";
+      } catch {
+        errorEl.textContent = "Something went wrong. Please try again.";
+        errorEl.style.display = "block";
+      } finally {
+        btn.classList.remove("loading"); btn.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>
